@@ -1,0 +1,36 @@
+@startuml
+
+!define Table(name, desc) class name as "desc" << (T,#FFAAAA) >>
+
+entity "Recettes" as Recettes {
+    +id_Recette: INT
+    --
+    +titre: VARCHAR(255)
+    +ingredients: TEXT
+    +preparation: TEXT
+}
+
+entity "Ingredients-Recette" as IR {
+    +id_ING_REC: INT
+    --
+    +id_Recette: INT
+    +Ing_Nom: VARCHAR(255)
+}
+
+entity "SuperCategorie" as SuperCat {
+    +Ing_Nom: VARCHAR(255)
+    --
+    +SuperCat: VARCHAR(255)
+}
+
+entity "SousCategorie" as SousCat {
+    +Ing_Nom: VARCHAR(255)
+    --
+    +SousCat: VARCHAR(255)
+}
+
+Recettes -- IR
+IR -- SuperCat
+IR -- SousCat
+
+@enduml
