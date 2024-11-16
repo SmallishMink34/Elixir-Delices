@@ -1,36 +1,38 @@
 @startuml
 
-!define Table(name, desc) class name as "desc" << (T,#FFAAAA) >>
-
-entity "Recettes" as Recettes {
-    +id_Recette: INT
-    --
-    +titre: VARCHAR(255)
-    +ingredients: TEXT
-    +preparation: TEXT
+entity "Recette" {
+  + id: int <<PK>>
+  + titre: string
+  + preparation: string
 }
 
-entity "Ingredients-Recette" as IR {
-    +id_ING_REC: INT
-    --
-    +id_Recette: INT
-    +Ing_Nom: VARCHAR(255)
+entity "Recette_Ingrédient" {
+  + recette_id: int <<PK>> <<FK>>
+  + ingredient_id: int <<PK>> <<FK>>
+  + quantite: string
+  + unite: string
 }
 
-entity "SuperCategorie" as SuperCat {
-    +Ing_Nom: VARCHAR(255)
-    --
-    +SuperCat: VARCHAR(255)
+entity "Ingrédient" {
+  + id: int <<PK>>
+  + nom: string
 }
 
-entity "SousCategorie" as SousCat {
-    +Ing_Nom: VARCHAR(255)
-    --
-    +SousCat: VARCHAR(255)
+entity "Catégorie" {
+  + id: int <<PK>>
+  + nom: string
 }
 
-Recettes -- IR
-IR -- SuperCat
-IR -- SousCat
+entity "Relation_Ingredient_Categorie" {
+  + id: int <<PK>>
+  + ingredient_id: int <<FK>>
+  + categorie_id: int <<FK>>
+  + type_relation: string <<ENUM>>  // 'super' ou 'sous'
+}
+
+Recette "1,1" -- "0,n" Recette_Ingrédient : contient
+Recette_Ingrédient "1,1" -- "1,1" Ingrédient : référence
+Ingrédient "0,n" -- "0,n" Relation_Ingredient_Categorie : a une relation avec
+Catégorie "0,n" -- "0,n" Relation_Ingredient_Categorie : est liée à
 
 @enduml

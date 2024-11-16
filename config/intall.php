@@ -1,109 +1,166 @@
 <?php
 // Configuration de la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "elixir_delices";
+include("mdp.php");
+include("Donnees.inc.php");
 
-// Connexion à MySQL
-$conn = new mysqli($servername, $username, $password);
+try {
+    // Connexion à la base de données
+    $pdo = new PDO("mysql:host=$host", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Vérifier la connexion
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Création de la base de données
+    $pdo->exec("DROP DATABASE IF EXISTS $dbname");
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS $dbname");
+    $pdo->exec("USE $dbname");
 
-// Créer la base de données
-$sql = "CREATE DATABASE IF NOT EXISTS $dbname";
-if ($conn->query($sql) === TRUE) {
-    echo "Database created successfully\n";
-} else {
-    echo "Error creating database: " . $conn->error;
-}
+    // Création des tables
+    $tables = [
+        // Table Recette
+        "CREATE TABLE IF NOT EXISTS Recette (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            titre VARCHAR(255) NOT NULL,
+            preparation TEXT NOT NULL
+        )",
 
-// Sélectionner la base de données
-$conn->select_db($dbname);
+        // Table Ingrédient
+        "CREATE TABLE IF NOT EXISTS Ingredient (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nom VARCHAR(255) UNIQUE NOT NULL
+        )",
 
-// Créer les tables nécessaires RECETTE
-$sql = "CREATE TABLE IF NOT EXISTS Recettes (
-    id_Recette INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    titre VARCHAR(255) NOT NULL,
-    preparation TEXT,
-    ingredients TEXT,
-    foreign key (id_Recette) references Ingredients-Recettes(id_recette)
-)";
+        // Table d'association entre Recette et Ingrédient
+        "CREATE TABLE IF NOT EXISTS Recette_Ingredient (
+            recette_id INT NOT NULL,
+            ingredient_id INT NOT NULL,
+            quantite VARCHAR(50),
+            unite VARCHAR(50),
+            PRIMARY KEY (recette_id, ingredient_id),
+            FOREIGN KEY (recette_id) REFERENCES Recette(id) ON DELETE CASCADE,
+            FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE
+        )",
+        // Table des catégories
+        "CREATE TABLE IF NOT EXISTS Categorie (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nom VARCHAR(255) UNIQUE NOT NULL 
+        )",
+        // Table des relations ingrédient-catégorie
+        "CREATE TABLE IF NOT EXISTS Relation_Ingredient_Categorie (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            ingredient_id INT NOT NULL,
+            categorie_id INT NOT NULL,
+            type_relation ENUM('super', 'sous') NOT NULL, # super ou sous
+            FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE,
+            FOREIGN KEY (categorie_id) REFERENCES Categorie(id) ON DELETE CASCADE
+        )"
+    ];
 
-if ($conn->query($sql) === TRUE) {
-    echo "Table recette created successfully\n";
-} else {
-    echo "Error creating table: " . $conn->error;
-}
-
-// Créer les tables nécessaires RECETTE
-$sql2 = "CREATE TABLE IF NOT EXISTS Ingredients_Recettes (
-    id_ING_REC INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Ing_NOM VARCHAR(255) NOT NULL,
-    id_Recette INT(6) NOT NULL
-)";
-
-if ($conn->query($sql2) === TRUE) {
-    echo "Table recette created successfully\n";
-} else {
-    echo "Error creating table: " . $conn->error;
-}
-
-$sql3 = "CREATE TABLE IF NOT EXISTS SuperCategorie (
-    Ing_Nom VARCHAR(255) NOT NULL PRIMARY KEY,
-    SuperCat VARCHAR(255),
-    FOREIGN KEY (Ing_Nom) REFERENCES `Ingredients_Recettes`(Ing_Nom),
-    FOREIGN KEY (SuperCat) REFERENCES SuperCategorie(Ing_Nom)
-)";
-
-if ($conn->query($sql3) === TRUE) {
-    echo "Table SuperCategorie created successfully\n";
-} else {
-    echo "Error creating table: " . $conn->error;
-}
-
-// Créer la table nécessaire SousCategorie
-$sql4 = "CREATE TABLE IF NOT EXISTS SousCategorie (
-    Ing_Nom VARCHAR(255) NOT NULL PRIMARY KEY,
-    SousCat VARCHAR(255),
-    FOREIGN KEY (Ing_Nom) REFERENCES `Ingredients_Recettes`(Ing_Nom),
-    FOREIGN KEY (SousCat) REFERENCES SuperCategorie(Ing_Nom)
-)";
-
-if ($conn->query($sql4) === TRUE) {
-    echo "Table SousCategorie created successfully\n";
-} else {
-    echo "Error creating table: " . $conn->error;
-}
-
-
-
-// Inclure le fichier Donnees.inc.php
-include 'Donnees.inc.php';
-
-// Insérer les données dans la table produits
-foreach ($Recettes as $recette) {
-    $nom = $conn->real_escape_string($recette['titre']);
-    $ingredient = $conn->real_escape_string($recette['ingredients']);
-    $preparation = $conn->real_escape_string($recette['preparation']);
-
-    $sql = "INSERT INTO Recettes (nom, preparation, ingredient) VALUES ('$nom', '$ingredient', '$preparation')";
-    if ($conn->query($sql) === TRUE) {
-        echo "New record created successfully\n";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+    // Exécution des requêtes de création
+    foreach ($tables as $query) {
+        $pdo->exec($query);
     }
-}
 
-foreach ($hier as $Hierarchie){
-    $nom = $conn->real_escape_string($hier);
-    $super = $conn->real_escape_string($Hierarchie['super-categorie']);
-    $
-}
+    // Préparer les requêtes
+    $insertRecette = $pdo->prepare("INSERT INTO Recette (titre, preparation) VALUES (:titre, :preparation)");
+    $insertIngredient = $pdo->prepare("INSERT IGNORE INTO Ingredient (nom) VALUES (:nom)");
+    $insertRecetteIngredient = $pdo->prepare("
+        INSERT INTO Recette_Ingredient (recette_id, ingredient_id, quantite, unite) 
+        VALUES (:recette_id, :ingredient_id, :quantite, :unite)
+    ");
 
-// Fermer la connexion
-$conn->close();
+    $insertCategorie = $pdo->prepare("INSERT IGNORE INTO Categorie (nom) VALUES (:nom)");
+    $insertRelation = $pdo->prepare("
+        INSERT INTO Relation_Ingredient_Categorie (ingredient_id, categorie_id, type_relation) 
+        VALUES (:ingredient_id, :categorie_id, :type_relation)
+    ");
+
+    foreach ($Hierarchie as $ingredient => $relations) {
+        // Insérer l'ingrédient principal
+        $insertIngredient->execute([':nom' => $ingredient]);
+        $ingredientId = $pdo->query("SELECT id FROM Ingredient WHERE nom = " . $pdo->quote($ingredient))->fetchColumn();
+
+        // Traiter les sous-catégories
+        if (isset($relations['sous-categorie'])) {
+            foreach ($relations['sous-categorie'] as $sousCategorie) {
+                $insertCategorie->execute([':nom' => $sousCategorie]);
+                $categorieId = $pdo->query("SELECT id FROM Categorie WHERE nom = " . $pdo->quote($sousCategorie))->fetchColumn();
+
+                // Ajouter la relation ingrédient → sous-catégorie
+                $insertRelation->execute([
+                    ':ingredient_id' => $ingredientId,
+                    ':categorie_id' => $categorieId,
+                    ':type_relation' => 'sous'
+                ]);
+            }
+        }
+        
+        if (isset($relations['super-categorie'])) {
+            foreach ($relations['super-categorie'] as $superCategorie) {
+                $insertCategorie->execute([':nom' => $superCategorie]);
+                $categorieId = $pdo->query("SELECT id FROM Categorie WHERE nom = " . $pdo->quote($superCategorie))->fetchColumn();
+
+                // Ajouter la relation ingrédient → super-catégorie
+                $insertRelation->execute([
+                    ':ingredient_id' => $ingredientId,
+                    ':categorie_id' => $categorieId,
+                    ':type_relation' => 'super'
+                ]);
+            }
+        }
+    }
+    // Lecture des recettes
+    foreach ($Recettes as $recette) {
+        // Insérer la recette
+        $insertRecette->execute([
+            ':titre' => $recette['titre'],
+            ':preparation' => $recette['preparation']
+        ]);
+        $recetteId = $pdo->lastInsertId();
+
+        // Traiter les ingrédients
+        $ing_reci = $recette["ingredients"];
+
+
+        /*
+            (?:^|\|) : début de ligne ou un |
+            \s* : espaces
+            (\d+)? : chiffre (optionnel)
+            \s* : espace
+            (cl |g |kg |ml |l |lb )? : unité (optionnel)
+            (.+?) : nom de l'ingrédient
+            (?=\||$) : suivi d'un | ou de la fin de la ligne
+        */
+        preg_match_all('/(?:^|\|)\s*(\d+)?\s*(cl|g|kg|ml|l|càs|càc|oz|lb)?\s*(.+?)(?=\||$)/', $ing_reci, $matches, PREG_SET_ORDER);
+        $index = 0;
+        foreach ($matches as $match) {
+            $quantite = $match[1] ?? null; // Quantité (ex: 10, 5)
+            $unite = $match[2] ?? null;    // Unité (ex: cl, g)
+            $nom = $recette["index"][$index];             // Nom de l'ingrédient
+
+            // Insérer l'ingrédient
+            $insertIngredient->execute([':nom' => $nom]);
+
+            // Récupérer l'ID de l'ingrédient
+            $ingredientId = $pdo->query("SELECT id FROM Ingredient WHERE nom = " . $pdo->quote($nom))->fetchColumn();
+
+            try {
+                // Associer la recette à l'ingrédient
+                $insertRecetteIngredient->execute([
+                    ':recette_id' => $recetteId,
+                    ':ingredient_id' => $ingredientId,
+                    ':quantite' => $quantite,
+                    ':unite' => $unite
+                ]);
+            } catch (PDOException $e) {
+                if ($e->getCode() != 23000) {
+                    throw $e;
+                }
+            }
+            $index++;
+        }
+    }
+
+    echo "Base de données et données insérées avec succès !";
+} catch (PDOException $e) {
+    die("Erreur lors de la création ou l'insertion dans la base de données : " . $e->getMessage());
+}
 ?>

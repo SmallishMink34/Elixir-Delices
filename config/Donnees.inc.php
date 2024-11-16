@@ -1577,8 +1577,8 @@
       6 => 'Pamplemousse',
       7 => 'Partie d\'agrumes',
     ),
-  ),Assaisonnement
-  '' => 
+  ),
+  'Assaisonnement' => 
   array (
     'sous-categorie' => 
     array (
