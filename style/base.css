@@ -1,0 +1,63 @@
+:root {
+    --primary-color: #3A4F41;
+    --secondary-color: #B9314F;
+    --background-color: #e1dee3;
+    --text-color: #DEC3BE;
+    --accent-color: #D5A18E;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+button {
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+}
+
+button:hover {
+    background-color: var(--primary-color);
+}
+
+.activeTab {
+    color: var(--accent-color);
+}
+
+.navbar{
+    background-color: var(--accent-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-link{
+    font-size: 1.2em;
+
+}
+
+.nav-link:hover {
+    color: var(--background-color);
+}
+
+.nav-icon {
+    color: var(--background-color);
+}
+
+svg.nav-icon {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+svg.nav-icon:hover {
+    fill: var(--background-color);
+}
