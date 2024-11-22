@@ -1,0 +1,11 @@
+.circle {
+    width: 150vw;        /* Largeur du cercle */
+    height: 150vh;       /* Hauteur du cercle */
+    border-radius: 50%;  /* Bordures arrondies pour former un cercle */
+    background-color: var(--accent-color); /* Couleur du cercle */
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
