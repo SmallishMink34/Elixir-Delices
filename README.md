@@ -10,3 +10,4 @@ style : ensemble des fichiers css
 
 ### Ressources :
 colors Schem[https://coolors.co/3a4f41-b9314f-d5a18e-dec3be-e1dee3]
+design style : https://themeforest.net/item/faryita-organic-juice-health-drinks-wordpress-theme/52155460

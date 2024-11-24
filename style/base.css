@@ -7,10 +7,16 @@
 }
 
 body, html {
-    width: 100vw;
+    margin: 0;
+    padding: 0;
+    max-width: 100vw;
     height: 100%;
     background-color: var(--background-color);
-    color: var(--text-color);leur de fond */
+    color: var(--text-color);
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Roboto', sans-serif;
 }
 
 
@@ -49,8 +55,42 @@ body, html {
     }
 }
 
+@keyframes zoomOut {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+        transform: translate(-50%, -50%) translateY(0);
+        translate: ;
+    }
+    100% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(2.5);
+        transform: translate(-50%, -50%) translateY(30%);
+    }
+}
 
+@keyframes zoomIn {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(2.5);
+        transform: translate(-50%, -50%) translateY(30%);
+    }
+    100% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+        transform: translate(-50%, -50%) translateY(0);
+        translate: ;
+    }
+    
+}
 
+header{
+    z-index: 10;
+}
 a {
     color: var(--primary-color);
     text-decoration: none;
@@ -135,6 +175,9 @@ svg.nav-icon:hover {
 .ParentSeachBox{
     animation: slideIn 0.5s forwards;
     z-index: 0;
+    background-color: var(--accent-color);
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .ParentSeachBox::after{
@@ -148,8 +191,19 @@ svg.nav-icon:hover {
     transition: 0.5s;
 }
 
+.ParentSeachBox:focus-within::after{
+    width: 0;
+}
+
 .search-bar:focus  {
     outline: none;
+}
+
+.search_active {
+    animation: zoomOut 0.5s forwards;
+}
+.search_unactive {
+    animation: zoomIn 0.5s forwards;
 }
 
 input {
