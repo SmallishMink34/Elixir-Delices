@@ -1,8 +1,8 @@
 .circle {
-    width: 150vw;        /* Largeur du cercle */
-    height: 150vh;       /* Hauteur du cercle */
-    border-radius: 50%;  /* Bordures arrondies pour former un cercle */
-    background-color: var(--accent-color); /* Couleur du cercle */
+    width: 150vw;        
+    height: 150vh;       
+    border-radius: 50%;  
+    background-color: var(--accent-color); 
     position: absolute;
     top: 40px;
     left: 50%;
@@ -10,5 +10,9 @@
 }
 
 .image_base{
-    z-index: 1;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    z-index: 2;
+    position: relative;
 }

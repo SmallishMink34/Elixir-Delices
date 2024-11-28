@@ -1,5 +1,17 @@
 
 <script>
+    
+    var isSearchActive = false;
+
+    function switchSearch() {
+        isSearchActive = !isSearchActive;
+        switchGhostList(['search', 'navbarNav']);
+        if (isSearchActive) {
+            setTimeout(() => {
+                document.getElementById('searchInput').focus();
+            }, 500);
+        }
+    }
 
     function switchGhostList(ids) {
         ids.forEach(id => switchGhost(id));
@@ -20,22 +32,47 @@
 
     function FocusSearch(){
         const search = document.getElementById('search');
+        const searchBody = document.getElementById('search_Body');
         search.classList.add('search_active');
+        searchBody.classList.add('searchBody_active');
         search.classList.remove('Ghost');
     }
 
     function FocusSearchOut(){
         const search = document.getElementById('search');
+        const searchBody = document.getElementById('search_Body');
+
         search.classList.add('search_unactive');
         search.classList.remove('search_active');
+        searchBody.classList.remove('searchBody_active');
+
         setTimeout(() => {
             search.classList.remove('search_unactive');
         }, 500);
     }
 
-    function Autocompletion(){
-        const search = document.getElementById('searchInput');
-        console.log(search.value);
+    function getUrl(){
+        const url = new URL(window.location.href);
+        return url;
+    }
+
+    function Autocompletion(value){
+        if (value.length == 0) {
+            document.getElementById("searchInput").innerHTML = "";
+            return;
+        } else {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    // document.getElementById("txtHint").innerHTML = this.responseText;
+                    
+                }
+            };
+        xmlhttp.open("GET", getUrl()+"&q=" + value, true);
+        xmlhttp.send();
+        }
+        // const search = document.getElementById('searchInput');
+        // console.log(search.value);
     }
     
 </script>
@@ -55,14 +92,17 @@
                     <div class="searchBox">
                         <input type="hidden" name="page" value="Boissons">
                         <button class="searchButton" type="submit" tabindex="-1" > <?php include("images/icons/search.svg") ?></button> <!-- TODO: modifier le tabindex -->
-                        <li class="nav-item"><input id="searchInput" name="search" class="nav-link search-bar" type="search"  oninput="Autocompletion()" onfocus="FocusSearch()" onblur="FocusSearchOut()"  placeholder="Recherche..." tabindex="-1"></li>
+                        <li class="nav-item"><input id="searchInput" name="search" class="nav-link search-bar" type="search"  oninput="Autocompletion(this.value)" onfocus="FocusSearch()" onblur="FocusSearchOut()"  placeholder="Recherche..." tabindex="-1"></li>
                     </div>
                 </form>
             </div>
         </div>
         <ul class="d-flex flex-right">
-            <li class="nav-item"></li><button class="nav-link" onclick="switchGhostList(['search', 'navbarNav'])"><?php include("images/icons/search.svg") ?></button></li>
+            <li class="nav-item"></li><button class="nav-link" onclick="switchSearch()"><?php include("images/icons/search.svg") ?></button></li>
             <li class="nav-item"><a class="nav-link" href="?page=account"><b>Compte</b></Account></a></li>
         </ul>
     </div>
 </nav>
+<div id="search_Body">
+
+</div>

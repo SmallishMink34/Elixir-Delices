@@ -61,7 +61,6 @@ body, html {
         visibility: visible;
         transform: scale(1);
         transform: translate(-50%, -50%) translateY(0);
-        translate: ;
     }
     100% {
         opacity: 1;
@@ -86,6 +85,25 @@ body, html {
         translate: ;
     }
     
+}
+
+#searchBody{
+    display: none;
+}
+
+.searchBody_active{
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,.5);
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s forwards;
 }
 
 header{
@@ -193,6 +211,7 @@ svg.nav-icon:hover {
 
 .ParentSeachBox:focus-within::after{
     width: 0;
+    
 }
 
 .search-bar:focus  {
@@ -200,9 +219,11 @@ svg.nav-icon:hover {
 }
 
 .search_active {
+    z-index: 10;
     animation: zoomOut 0.5s forwards;
 }
 .search_unactive {
+    z-index: 0;
     animation: zoomIn 0.5s forwards;
 }
 
