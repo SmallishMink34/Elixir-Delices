@@ -36,6 +36,8 @@
         search.classList.add('search_active');
         searchBody.classList.add('searchBody_active');
         search.classList.remove('Ghost');
+
+        Autocompletion(document.getElementById('searchInput').value);
     }
 
     function FocusSearchOut(){
@@ -45,6 +47,8 @@
         search.classList.add('search_unactive');
         search.classList.remove('search_active');
         searchBody.classList.remove('searchBody_active');
+
+        searchBody.innerHTML = "";
 
         setTimeout(() => {
             search.classList.remove('search_unactive');
@@ -57,22 +61,39 @@
     }
 
     function Autocompletion(value){
+        const query = value;
+        const searchBody = document.getElementById('search_Body');
         if (value.length == 0) {
             document.getElementById("searchInput").innerHTML = "";
             return;
         } else {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    // document.getElementById("txtHint").innerHTML = this.responseText;
-                    
+            fetch(`/pages/search.php?q=${encodeURIComponent(query)}`)
+            .then(response => {
+                console.log('Response:', response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            };
-        xmlhttp.open("GET", getUrl()+"&q=" + value, true);
-        xmlhttp.send();
+                return response.text(); // Change temporairement en texte brut
+            })
+            .then(data => {
+                return JSON.parse(data); // Parse explicitement le JSON
+            })
+            .then(parsedData => {
+                searchBody.innerHTML = "";
+                console.log('Parsed data:', parsedData);
+                parsedData.forEach(item => {
+                    const div = document.createElement('div');
+                    const link = document.createElement('a');
+                    link.innerHTML = item.titre;
+                    link.href = getUrl().origin + "/?page=Boissons&search=" + item.titre;
+                    div.appendChild(link);
+                    searchBody.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur dans la requête fetch :', error);
+            });
         }
-        // const search = document.getElementById('searchInput');
-        // console.log(search.value);
     }
     
 </script>
@@ -104,5 +125,5 @@
     </div>
 </nav>
 <div id="search_Body">
-
+    
 </div>
