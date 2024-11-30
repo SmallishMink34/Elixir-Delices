@@ -90,19 +90,29 @@ body, html {
 #searchBody{
     display: none;
 }
+#listSearch{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    height: 60%;
+}
 
-.searchBody_active div{
+.searchBody_active div div{
     width: 300px;
-    height: 50px;
+    min-height: 50px;
+    height: auto;
     background-color: aliceblue;
     margin: 20px;
     border-radius: 10px;
+    padding: 20px;
 }
 
 .searchBody_active{
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -110,9 +120,6 @@ body, html {
     height: 100vh;
     background-color: rgba(0,0,0,.5);
     z-index: 5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     animation: fadeIn 0.5s forwards;
 }
 

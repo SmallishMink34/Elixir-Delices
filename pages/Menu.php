@@ -62,7 +62,7 @@
 
     function Autocompletion(value){
         const query = value;
-        const searchBody = document.getElementById('search_Body');
+        const searchBody = document.getElementById('listSearch');
         if (value.length == 0) {
             document.getElementById("searchInput").innerHTML = "";
             return;
@@ -125,5 +125,7 @@
     </div>
 </nav>
 <div id="search_Body">
-    
+    <div id="listSearch">
+
+    </div>
 </div>
