@@ -34,7 +34,7 @@ try {
             ingredient_id INT NOT NULL,
             quantite VARCHAR(50),
             unite VARCHAR(50),
-            PRIMARY KEY (recette_id, ingredient_id),
+            PRIMARY KEY (recette_id),
             FOREIGN KEY (recette_id) REFERENCES Recette(id) ON DELETE CASCADE,
             FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE
         )",

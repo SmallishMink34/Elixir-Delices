@@ -1,4 +1,6 @@
 <div class="caseBoisson">
-    <img src="<?= $imageSrc ?>" alt="">
-    <p><?= $titre ?></p>
+    <a href="?page=Boisson&drink=<?=$id?>">
+        <img src="<?= $imageSrc ?>" alt="">
+        <p><?= $titre ?></p>
+    </a>
 </div>

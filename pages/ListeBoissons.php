@@ -42,6 +42,7 @@ function formatString($string) {
 </div>
 <div class="container_Boissons">
     <?php foreach ($cases as $case) {
+        $id = $case['id'];
         $titre = $case['titre'];
         $imagePath = "/images/Photos/";
         $image = formatString($titre);

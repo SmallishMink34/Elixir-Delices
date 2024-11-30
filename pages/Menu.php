@@ -104,14 +104,14 @@
             <div class="no-animation Menu" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="?page=home"><b>Home</b></a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=Boissons"><b>Boissons</b></a></li>
+                    <li class="nav-item"><a class="nav-link" href="?page=ListeBoissons"><b>Boissons</b></a></li>
                     <li class="nav-item"><a class="nav-link" href="?page=Ingrédients"><b>Ingrédients</b></a></li>
                 </ul>
             </div>
             <div id="search" class="ParentSeachBox Ghost no-animation">
-                <form action="?page=Boissons" method="get">
+                <form action="?page=ListeBoissons" method="get">
                     <div class="searchBox">
-                        <input type="hidden" name="page" value="Boissons">
+                        <input type="hidden" name="page" value="ListeBoissons">
                         <button class="searchButton" type="submit" tabindex="-1" > <?php include("images/icons/search.svg") ?></button> <!-- TODO: modifier le tabindex -->
                         <li class="nav-item"><input id="searchInput" name="search" class="nav-link search-bar" type="search"  oninput="Autocompletion(this.value)" onfocus="FocusSearch()" onblur="FocusSearchOut()"  placeholder="Recherche..." tabindex="-1"></li>
                     </div>
