@@ -13,11 +13,13 @@
             })
             .then(parsedData => {
                 console.log('Parsed data:', parsedData);
+                parsedData.forEach(item => {
+                    
+                });
             })
             .catch(error => {
                 console.error('Erreur dans la requête fetch :', error);
             });
-    }
+    }    
     getBoissonsInformations(<?php echo $_GET['drink']; ?>);
 </script>
-

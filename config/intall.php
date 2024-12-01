@@ -34,7 +34,7 @@ try {
             ingredient_id INT NOT NULL,
             quantite VARCHAR(50),
             unite VARCHAR(50),
-            PRIMARY KEY (recette_id),
+            PRIMARY KEY (recette_id, ingredient_id),
             FOREIGN KEY (recette_id) REFERENCES Recette(id) ON DELETE CASCADE,
             FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE
         )",
@@ -73,17 +73,33 @@ try {
         VALUES (:ingredient_id, :categorie_id, :type_relation)
     ");
 
+    $stmtIngredient = $pdo->prepare("SELECT id FROM Ingredient WHERE lower(nom) = lower(:nom)");
+    $stmtCategorie = $pdo->prepare("SELECT id FROM Categorie WHERE nom = :nom");
+
     foreach ($Hierarchie as $ingredient => $relations) {
+        print_r($relations);
+
         // Insérer l'ingrédient principal
+        
         $insertIngredient->execute([':nom' => $ingredient]);
-        $ingredientId = $pdo->query("SELECT id FROM Ingredient WHERE nom = " . $pdo->quote($ingredient))->fetchColumn();
+        $stmtIngredient->execute([':nom' => $ingredient]);
+        $ingredientId = $stmtIngredient->fetchColumn();
+        
+        if (!$ingredientId) {
+            throw new Exception("Ingrédient non trouvé : $ingredient");
+        }
 
         // Traiter les sous-catégories
         if (isset($relations['sous-categorie'])) {
             foreach ($relations['sous-categorie'] as $sousCategorie) {
                 $insertCategorie->execute([':nom' => $sousCategorie]);
-                $categorieId = $pdo->query("SELECT id FROM Categorie WHERE nom = " . $pdo->quote($sousCategorie))->fetchColumn();
+                $stmtCategorie->execute([':nom' => $sousCategorie]);
+                $categorieId = $stmtCategorie->fetchColumn();
 
+                if (!$categorieId) {
+                    throw new Exception("Catégorie non trouvée : $sousCategorie");
+                }
+                
                 // Ajouter la relation ingrédient → sous-catégorie
                 $insertRelation->execute([
                     ':ingredient_id' => $ingredientId,
@@ -96,8 +112,12 @@ try {
         if (isset($relations['super-categorie'])) {
             foreach ($relations['super-categorie'] as $superCategorie) {
                 $insertCategorie->execute([':nom' => $superCategorie]);
-                $categorieId = $pdo->query("SELECT id FROM Categorie WHERE nom = " . $pdo->quote($superCategorie))->fetchColumn();
+                $stmtCategorie->execute([':nom' => $superCategorie]);
+                $categorieId = $stmtCategorie->fetchColumn();
 
+                if (!$categorieId) {
+                    throw new Exception("Catégorie non trouvée : $superCategorie");
+                }
                 // Ajouter la relation ingrédient → super-catégorie
                 $insertRelation->execute([
                     ':ingredient_id' => $ingredientId,
