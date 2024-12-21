@@ -1,0 +1,8 @@
+#nomBoisson{
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+#listSuper{
+    font-size: small;
+}

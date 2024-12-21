@@ -38,11 +38,6 @@ try {
             FOREIGN KEY (recette_id) REFERENCES Recette(id) ON DELETE CASCADE,
             FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE
         )",
-        // Table des catégories
-        "CREATE TABLE IF NOT EXISTS Categorie (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            nom VARCHAR(255) UNIQUE NOT NULL 
-        )",
         // Table des relations ingrédient-catégorie
         "CREATE TABLE IF NOT EXISTS Relation_Ingredient_Categorie (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +45,7 @@ try {
             categorie_id INT NOT NULL,
             type_relation ENUM('super', 'sous') NOT NULL, # super ou sous
             FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE,
-            FOREIGN KEY (categorie_id) REFERENCES Categorie(id) ON DELETE CASCADE
+            FOREIGN KEY (categorie_id) REFERENCES Ingredient(id) ON DELETE CASCADE
         )"
     ];
 
@@ -67,14 +62,14 @@ try {
         VALUES (:recette_id, :ingredient_id, :quantite, :unite)
     ");
 
-    $insertCategorie = $pdo->prepare("INSERT IGNORE INTO Categorie (nom) VALUES (:nom)");
+    // $insertCategorie = $pdo->prepare("INSERT IGNORE INTO Categorie (nom) VALUES (:nom)");
     $insertRelation = $pdo->prepare("
         INSERT INTO Relation_Ingredient_Categorie (ingredient_id, categorie_id, type_relation) 
         VALUES (:ingredient_id, :categorie_id, :type_relation)
     ");
 
     $stmtIngredient = $pdo->prepare("SELECT id FROM Ingredient WHERE lower(nom) = lower(:nom)");
-    $stmtCategorie = $pdo->prepare("SELECT id FROM Categorie WHERE nom = :nom");
+    // $stmtCategorie = $pdo->prepare("SELECT id FROM Categorie WHERE lower(nom) = lower(:nom)");
 
     foreach ($Hierarchie as $ingredient => $relations) {
         print_r($relations);
@@ -92,9 +87,9 @@ try {
         // Traiter les sous-catégories
         if (isset($relations['sous-categorie'])) {
             foreach ($relations['sous-categorie'] as $sousCategorie) {
-                $insertCategorie->execute([':nom' => $sousCategorie]);
-                $stmtCategorie->execute([':nom' => $sousCategorie]);
-                $categorieId = $stmtCategorie->fetchColumn();
+                $insertIngredient->execute([':nom' => $sousCategorie]);
+                $stmtIngredient->execute([':nom' => $sousCategorie]);
+                $categorieId = $stmtIngredient->fetchColumn();
 
                 if (!$categorieId) {
                     throw new Exception("Catégorie non trouvée : $sousCategorie");
@@ -111,9 +106,9 @@ try {
         
         if (isset($relations['super-categorie'])) {
             foreach ($relations['super-categorie'] as $superCategorie) {
-                $insertCategorie->execute([':nom' => $superCategorie]);
-                $stmtCategorie->execute([':nom' => $superCategorie]);
-                $categorieId = $stmtCategorie->fetchColumn();
+                $insertIngredient->execute([':nom' => $superCategorie]);
+                $stmtIngredient->execute([':nom' => $superCategorie]);
+                $categorieId = $stmtIngredient->fetchColumn();
 
                 if (!$categorieId) {
                     throw new Exception("Catégorie non trouvée : $superCategorie");

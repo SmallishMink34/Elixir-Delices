@@ -1,6 +1,8 @@
 <div class="caseBoisson">
     <a href="?page=Boisson&drink=<?=$id?>">
-        <img src="<?= $imageSrc ?>" alt="">
+        <div>
+            <img src="<?= $imageSrc ?>" alt="">
+        </div>
         <p><?= $titre ?></p>
     </a>
 </div>

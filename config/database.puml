@@ -18,10 +18,7 @@ entity "Ingrédient" {
   + nom: string
 }
 
-entity "Catégorie" {
-  + id: int <<PK>>
-  + nom: string
-}
+
 
 entity "Relation_Ingredient_Categorie" {
   + id: int <<PK>>
@@ -33,6 +30,6 @@ entity "Relation_Ingredient_Categorie" {
 Recette "1,1" -- "0,n" Recette_Ingrédient : contient
 Recette_Ingrédient "1,1" -- "1,1" Ingrédient : référence
 Ingrédient "0,n" -- "0,n" Relation_Ingredient_Categorie : a une relation avec
-Catégorie "0,n" -- "0,n" Relation_Ingredient_Categorie : est liée à
+Ingrédient "0,n" -- "0,n" Relation_Ingredient_Categorie : est liée à
 
 @enduml
