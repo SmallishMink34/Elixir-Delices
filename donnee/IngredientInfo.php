@@ -14,6 +14,7 @@ if (empty($query)) {
     exit;
 }
 
+/* Requete SQL Recursive afin de recuperer les super-catégories d'un ingrédient */
 $stmt = $pdo->prepare("WITH RECURSIVE Recursive_Ingredient_Categories AS (
   -- Étape de base : Commencez avec l'ingrédient enfant
   SELECT
@@ -65,7 +66,10 @@ WHERE ric.ingredient_id NOT IN (
 AND ric.type_relation = 'sous' ;
 ");
 $stmt->execute(['query' => $query]);
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$arbre = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt2 = $pdo->prepare("SELECT ri.recette_id, r.titre FROM recette_ingredient ri join recette r on r.id = ri.recette_id WHERE ri.ingredient_id = :id;");
+
 
 function buildTree(array $elements, $parent = null) {
   $branch = [];
@@ -83,9 +87,14 @@ function buildTree(array $elements, $parent = null) {
   return $branch;
 }
 
-$tree = buildTree($result);
+$tree = buildTree($arbre);
 
 header('Content-Type: application/json');
 
-echo json_encode($tree, JSON_PRETTY_PRINT);
+
+$result = array();
+$result['hierarchy'] = $tree;
+$stmt2->execute(['id' => $query]);
+$result['recettes'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+echo json_encode($result, JSON_PRETTY_PRINT);
 ?>

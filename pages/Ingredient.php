@@ -18,7 +18,7 @@ function traverseData(data, parsedData = [], path = []) {
     }
 
     function getBoissonsInformations (value){
-        fetch(`/config/IngredientInfo.php?ing=${encodeURIComponent(value)}`)
+        fetch(`/donnee/IngredientInfo.php?ing=${encodeURIComponent(value)}`)
             .then(response => {
                 console.log('Response:', response);
                 if (!response.ok) {
@@ -33,7 +33,7 @@ function traverseData(data, parsedData = [], path = []) {
                 console.log('Parsed data:', parsedData);
 
                 let data = [];
-                traverseData(parsedData, data);
+                traverseData(parsedData['hierarchy'], data);
 
                 // Affichage des chemins complets sur plusieurs lignes
                 let listContainer = document.createElement('div');

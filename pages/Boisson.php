@@ -1,6 +1,6 @@
 <script>
     function getBoissonsInformations (value){
-        fetch(`/config/BoissonInfo.php?drink=${encodeURIComponent(value)}`)
+        fetch(`/donnee/BoissonInfo.php?drink=${encodeURIComponent(value)}`)
             .then(response => {
                 console.log('Response:', response);
                 if (!response.ok) {
@@ -13,13 +13,26 @@
             })
             .then(parsedData => {
                 console.log('Parsed data:', parsedData);
-                parsedData.forEach(item => {
-                    document.getElementById('Ingredients').innerHTML += `<p>${item.quantite} <a href="?page=Ingredient&ing=${item.id}">${item.nom}</a></p>`;
+                parsedData["ingredients"].forEach(item => {
+                    document.getElementById('Ingredients').innerHTML += `<p>${item.quantite} ${item.unite} <a href="?page=Ingredient&ing=${item.id}">${item.nom}</a></p>`;
                 });
-                document.getElementById('titre').innerHTML = parsedData[0].titre;
-                document.getElementById('preparation').innerHTML = parsedData[0].preparation;
-                document.getElementById('image').src = `${parsedData[0].image}`;
-                document.getElementById('nomBoisson').innerHTML = parsedData[0].titre;
+                document.getElementById('titre').innerHTML = parsedData['titre'];
+                document.getElementById('titreNav').innerHTML = parsedData['titreFormat'];
+                document.getElementById('preparation').innerHTML = parsedData['preparation'];
+                document.getElementById('image').src = `${parsedData['image']}`;
+                document.getElementById('nomBoisson').innerHTML = parsedData['titre'];
+                if (parsedData['previous_name'] != null){
+                    document.getElementById('navPrev').href = `?page=Boisson&drink=${parsedData['previous']}`;
+                }else{
+                    document.getElementById('navPrev').innerHTML = "";
+                }
+                if (parsedData['next_name'] != null){
+                    document.getElementById('navNext').href = `?page=Boisson&drink=${parsedData['next']}`;
+                }else{
+                    document.getElementById('navNext').innerHTML = "";
+                }
+                
+                
             })
             .catch(error => {
                 console.error('Erreur dans la requête fetch :', error);
@@ -33,11 +46,15 @@
 </div>
 <div class="content">
         <img id="image" src="" alt="">
-        <h1 id="titre">aaa</h1>
-        <p id="preparation">Rien</p>
-        <div id="Ingredients">
-
+        <div id="boissonInfo">
+            <h1 id="titre">aaa</h1>
+            <p id="preparation">Rien</p>
+            <div id="Ingredients"></div>
         </div>
     </div>
-
+</div>
+<div id="nav">
+    <a id="navPrev" href=""><</a>
+    <p id="titreNav"> Boisson </p>
+    <a id="navNext">></a>
 </div>

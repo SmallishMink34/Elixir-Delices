@@ -21,6 +21,11 @@ function formatString($string) {
     return $string;
 }
 
+function formatTitre($titre){
+    $result = preg_match('/^([^\(,:]+(?:\s[^\(,:]+){0,2})/', $titre, $matches);
+    return $matches[0];
+}
+
 function getImage($Path,$titre){
     $imagePath = $Path;
     $image = formatString($titre);
