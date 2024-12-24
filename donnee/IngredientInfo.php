@@ -1,6 +1,7 @@
 <?php 
-require '../include/db.php';
-require '../include/utils.php';
+include_once __DIR__ . '/../include/db.php';
+include_once __DIR__ . '/../include/utils.php';
+
 // Connexion à la base de données
 $pdo = getDatabaseConnection();
 if (!$pdo) {

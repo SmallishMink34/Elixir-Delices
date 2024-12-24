@@ -1,7 +1,10 @@
+<?php
+session_start();
+?>
 
 <script>
-    
     var isSearchActive = false;
+    changeState(false);
 
     function switchSearch() {
         isSearchActive = !isSearchActive;
@@ -95,6 +98,19 @@
             });
         }
     }
+
+
+    function changeState(value = false){
+        const toggle = document.getElementById('toggle');
+        if (value) {
+            toggle.checked = value;
+        }
+        if (toggle.checked) {
+            document.getElementById('dropdown').classList.remove('invisible');
+        } else {
+            document.getElementById('dropdown').classList.add('invisible');
+        }
+    }
     
 </script>
 <nav class="header navbar navbar-expand-lg">
@@ -105,7 +121,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="?page=home"><b>Home</b></a></li>
                     <li class="nav-item"><a class="nav-link" href="?page=ListeBoissons"><b>Boissons</b></a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=Ingrédients"><b>Ingrédients</b></a></li>
+                    <li class="nav-item"><a class="nav-link" href="?page=Ingredients"><b>Ingrédients</b></a></li>
                 </ul>
             </div>
             <div id="search" class="ParentSeachBox Ghost no-animation">
@@ -120,7 +136,22 @@
         </div>
         <ul class="d-flex flex-right">
             <li class="nav-item"></li><button class="nav-link" onclick="switchSearch()"><?php include("images/icons/search.svg") ?></button></li>
-            <li class="nav-item"><a class="nav-link" href="?page=account"><b>Compte</b></Account></a></li>
+            <li class="nav-item flex-center">
+                <input type="checkbox" role="button" aria-label="Display the menu" id="toggle" onclick="changeState()" class="menuDropdown">
+                <div id="dropdown" class="dropdown invisible" >
+                    <ul id="menuItemToDisable">
+                        <li class="nav-item"><a href="?page=home">Home</a></li>
+                        <li class="nav-item"><a href="?page=ListeBoissons">Boissons</a></li>
+                        <li class="nav-item"><a href="?page=Ingredients">Ingrédients</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="config\intall.php">INSTALL</a></li>
+                        <li><a href="?page=Account">Account</a></li>
+                        <li><a href="?page=Panier">Panier</a></li>
+                        <li><a href="?page=Login">Login</a></li>
+                    </ul>
+                </div>
+            </li>
         </ul>
     </div>
 </nav>
@@ -129,3 +160,4 @@
 
     </div>
 </div>
+

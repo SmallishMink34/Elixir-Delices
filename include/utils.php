@@ -30,16 +30,36 @@ function getImage($Path,$titre){
     $imagePath = $Path;
     $image = formatString($titre);
     // echo "$imagePath$image";
-    if (file_exists("./".$imagePath . $image . ".jpg")) {
+    if (file_exists($imagePath . $image . ".jpg")) {
         $imageSrc = $imagePath . $image . ".jpg";
     }
     // Sinon vérifier si l'image avec extension .png existe
-    elseif (file_exists("./".$imagePath . $image . ".png")) {
+    elseif (file_exists($imagePath . $image . ".png")) {
         $imageSrc = $imagePath . $image . ".png";
     }
     // Si aucune image n'existe, utiliser une image par défaut
     else {
         $imageSrc = "/images/Photos/default_image.jpg"; // Image par défaut
+//        $imageSrc = $imagePath . $image . ".png";
     }
     return $imageSrc;
+}
+
+function checkInBasket($id)
+{
+    if (isset($_SESSION['panier'])) {
+        foreach ($_SESSION['panier'] as $key => $value) {
+            if ($value['id'] == $id) {
+                return true;
+            }
+        }
+    }else if (isset($_COOKIE['panier'])) {
+        $basket = json_decode($_COOKIE['panier'], true);
+        foreach ($basket as $key => $value) {
+            if ($value == $id) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
