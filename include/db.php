@@ -2,15 +2,11 @@
 include_once __DIR__ . '/../config/mdp.php';
 
 function getDatabaseConnection(): PDO {
-//    $host = "sql112.byethost16.com";
-//    $username = "b16_37711670";
-//    $password = "zdP97PHxrKf&GQ8h";
-//    $dbname = "b16_37711670_Boissons";
-
-    $host = "localhost";
-    $username = "root";
-    $password = "1002";
-    $dbname = "elixir_delices";
+    global $host, $username, $password, $dbname;
+    $host = "sql112.byethost16.com";
+    $username = "b16_37711670";
+    $password = "zdP97PHxrKf&GQ8h";
+    $dbname = "b16_37711670_Boissons";
     try {
         $pdo = new PDO("mysql:host=$host", $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

@@ -91,3 +91,4 @@ header('Content-Type: application/json');
 
 echo json_encode($results);
 error_log('Fin du traitement');
+?>
