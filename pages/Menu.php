@@ -194,6 +194,7 @@ session_start();
                         <li class="nav-item"><a href="?page=home">Home</a></li>
                         <li class="nav-item"><a href="?page=ListeBoissons">Boissons</a></li>
                         <li class="nav-item"><a href="?page=ListeIngredients">Ingrédients</a></li>
+                        <hr>
                     </ul>
                     <ul>
                         <li><a href="config\intall.php">INSTALL</a></li>

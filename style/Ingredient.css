@@ -1,7 +1,4 @@
-#nomBoisson{
-    color: var(--primary-color);
-    font-weight: bold;
-}
+@import 'Boisson.css';
 
 #listSuper{
     font-size: small;

@@ -61,23 +61,22 @@
 </script>
 <div id="history">
     <a href="?page=Home">Accueil</a> > <a href="?page=ListeBoissons">Liste des boissons</a> > <span id="nomBoisson"></span>
-
 </div>
 <div id="boissonContener" class="content">
     <div id="boisson">
         <img id="image" src="" alt="">
     </div>
-        <div id="boissonInfo">
-            <h1 id="titre">aaa</h1>
-            <p id="preparation">Rien</p>
-            <div id="Ingredients">
-                <table id="tableIngredients">
+    <div id="boissonInfo">
+        <h1 id="titre">aaa</h1>
+        <p id="preparation">Rien</p>
+        <div id="Ingredients" >
+            <table id="tableIngredients"  class="tableInfo">
 
-                </table>
-            </div>
+            </table>
         </div>
     </div>
 </div>
+
 <div id="nav">
     <a id="navPrev" href=""><</a>
     <p id="titreNav"> Boisson </p>

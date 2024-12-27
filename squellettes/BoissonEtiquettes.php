@@ -11,7 +11,7 @@
 
 ?>
 <div class="caseBoisson">
-    <a href="?page=Boisson&drink=<?=$identifiant?>">
+    <a href="?page=<?= $type=='boisson'? 'Boisson' : 'Ingredient'?>&<?= $type=='boisson'? 'drink' : 'ing'?>=<?=$identifiant?>">
         <div>
             <img class="imgBoisson" src="<?= $imageSrc ?>" alt="">
         </div>

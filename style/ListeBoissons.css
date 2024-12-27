@@ -11,6 +11,8 @@
     max-width: 150px;
     height: calc(20vw * 1.5); /* 30% de la hauteur de la fenêtre */
     max-height: 225px;
+    min-width: 120px;
+    min-height: 180px;
     background-color: #e3e3e3;
     margin: 10px;
     display: flex;
