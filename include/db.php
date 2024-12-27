@@ -1,18 +1,19 @@
 <?php
+include_once __DIR__ . '/../config/mdp.php';
+
 function getDatabaseConnection(): PDO {
-    $host = "localhost";
-    $username = "root";
-    $password = "1002";
-    $dbname = "elixir_delices";
-
-    $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-
+    global $host, $username, $password, $dbname;
+    $host = "sql112.byethost16.com";
+    $username = "b16_37711670";
+    $password = "zdP97PHxrKf&GQ8h";
+    $dbname = "b16_37711670_Boissons";
     try {
-        return new PDO($dsn, $username, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
+        $pdo = new PDO("mysql:host=$host", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec("USE $dbname");
+        return $pdo;
     } catch (PDOException $e) {
+        echo "host : $host, username : $username, password : $password, dbname : $dbname";
         die('Erreur de connexion : ' . $e->getMessage());
     }
 }

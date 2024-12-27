@@ -9,47 +9,72 @@
                 return response.text(); // Change temporairement en texte brut
             })
             .then(data => {
-                return JSON.parse(data); // Parse explicitement le JSON
+                try {
+                    const parsedData = JSON.parse(data);
+                    if (!parsedData || typeof parsedData !== "object") {
+                        throw new Error("Données invalides reçues");
+                    }
+                    return parsedData;
+                } catch (e) {
+                    console.error("Erreur lors du parsing JSON :", e, data);
+                    throw e;
+                }
             })
             .then(parsedData => {
+                const drinkData = Object.values(parsedData)[0];
                 console.log('Parsed data:', parsedData);
-                parsedData["ingredients"].forEach(item => {
-                    document.getElementById('Ingredients').innerHTML += `<p>${item.quantite} ${item.unite} <a href="?page=Ingredient&ing=${item.id}">${item.nom}</a></p>`;
-                });
-                document.getElementById('titre').innerHTML = parsedData['titre'];
-                document.getElementById('titreNav').innerHTML = parsedData['titreFormat'];
-                document.getElementById('preparation').innerHTML = parsedData['preparation'];
-                document.getElementById('image').src = `${parsedData['image']}`;
-                document.getElementById('nomBoisson').innerHTML = parsedData['titre'];
-                if (parsedData['previous_name'] != null){
-                    document.getElementById('navPrev').href = `?page=Boisson&drink=${parsedData['previous']}`;
+                if (Array.isArray(drinkData["ingredients"])) {
+                    const ingredients = document.getElementById('tableIngredients');
+                    ingredients.innerHTML = "<tr><th>Quantité</th><th>Unité</th><th>Ingrédient</th></tr>";
+                    for (const ingredient of drinkData["ingredients"]) {
+                        ingredients.innerHTML += `<tr><td>${ingredient.quantite || ''}</td><td>${ingredient.unite || ''}</td><td><a href='?page=Ingredient&ing=${ingredient.id}'> ${ingredient.nom}</td></tr>`;
+
+                    }
+
+                } else {
+                    console.warn('Ingredients is not an array or is missing:', drinkData["ingredients"]);
+                }
+                document.getElementById('titre').innerHTML = drinkData['titre'];
+                document.getElementById('titreNav').innerHTML = drinkData['titreFormat'];
+                document.getElementById('preparation').innerHTML = drinkData['preparation'];
+                document.getElementById('image').src = `${drinkData['image']}`;
+                document.getElementById('nomBoisson').innerHTML = drinkData['titre'] + " #" + drinkData['id'];
+                if (drinkData['previous_name'] != null){
+                    document.getElementById('navPrev').href = `?page=Boisson&drink=${drinkData['previous']}`;
                 }else{
                     document.getElementById('navPrev').innerHTML = "";
                 }
-                if (parsedData['next_name'] != null){
-                    document.getElementById('navNext').href = `?page=Boisson&drink=${parsedData['next']}`;
+                if (drinkData['next_name'] != null){
+                    document.getElementById('navNext').href = `?page=Boisson&drink=${drinkData['next']}`;
                 }else{
                     document.getElementById('navNext').innerHTML = "";
                 }
-                
-                
+
+                document.getElementById('boissonContener').style.display = "flex";
             })
             .catch(error => {
                 console.error('Erreur dans la requête fetch :', error);
             });
-    }   
+    }
+
     getBoissonsInformations(<?php echo $_GET['drink']; ?>);
 </script>
 <div id="history">
     <a href="?page=Home">Accueil</a> > <a href="?page=ListeBoissons">Liste des boissons</a> > <span id="nomBoisson"></span>
 
 </div>
-<div class="content">
+<div id="boissonContener" class="content">
+    <div id="boisson">
         <img id="image" src="" alt="">
+    </div>
         <div id="boissonInfo">
             <h1 id="titre">aaa</h1>
             <p id="preparation">Rien</p>
-            <div id="Ingredients"></div>
+            <div id="Ingredients">
+                <table id="tableIngredients">
+
+                </table>
+            </div>
         </div>
     </div>
 </div>

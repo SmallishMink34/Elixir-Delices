@@ -18,14 +18,39 @@ entity "Ingrédient" {
   + nom: string
 }
 
-
-
 entity "Relation_Ingredient_Categorie" {
   + id: int <<PK>>
   + ingredient_id: int <<FK>>
   + categorie_id: int <<FK>>
   + type_relation: string <<ENUM>>  // 'super' ou 'sous'
 }
+
+entity "Personne" {
+  + id: int <<PK>>
+  + nom: string
+  + prenom: string
+  + email: string
+  + mdp: string
+}
+ 
+entity "Favoris" {
+  + id: int <<PK>>
+  + recette_id: int <<FK>>
+  + personne_id: int <<FK>>
+}
+
+entity "Panier" {
+  + id: int <<PK>>
+  + recette_id: int <<FK>>
+  + personne_id: int <<FK>>
+  + quantite: string
+}
+
+Personne "0,n" -up- "0,n" Favoris
+Personne "0,n" -up- "0,n" Panier
+
+Favoris "1,1" -left- "1,1" Recette : Recette
+Panier "1,1" -left- "1,1" Recette : Recette
 
 Recette "1,1" -- "0,n" Recette_Ingrédient : contient
 Recette_Ingrédient "1,1" -- "1,1" Ingrédient : référence

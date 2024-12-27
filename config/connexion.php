@@ -1,39 +1,68 @@
 <?php
-session_start();
+include "../config/mdp.php";
+include "../include/db.php";
+require __DIR__.'/../include/init.php';
 
-$host = 'localhost';
-$username = 'nouvel_utilisateur';
-$password = 'mot_de_passe';
-$dbname = 'utilisateurDB';
-
-$conn = new mysqli($host, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Erreur de connexion : " . $conn->connect_error);
+if (isset($_SESSION['user'])) {
+    header('Location: ../index.php');
+    exit();
 }
 
-$email = $_POST['email'];
-$mot_de_passe = $_POST['mot_de_passe'];
+if (!isset($_POST['email'])){
+    header('Location: ../pages/Login.php');
+    exit();
+}
 
-$sql = "SELECT * FROM utilisateurs WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    if (password_verify($mot_de_passe, $user['mot_de_passe'])) {
-        $_SESSION['utilisateur_id'] = $user['id'];
-        $_SESSION['utilisateur_nom'] = $user['nom'];
-        header("Location: ../pages/compte.html");
-        exit();
-    } else {
-        echo "Mot de passe incorrect.";
+$email = htmlspecialchars(trim($_POST['email']), ENT_QUOTES, 'UTF-8'); // Sécurisation des données reçues
+if (empty($email) || strlen($email) > 50 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    header('Location: ../pages/Login.php?error=1'); // On ne précise pas quel champ est incorrect
+    exit();
+}
+
+$mot_de_passe = htmlspecialchars(trim($_POST['mot_de_passe']), ENT_QUOTES, 'UTF-8'); // Sécurisation des données reçues
+if (empty($mot_de_passe) || strlen($mot_de_passe) < 8) {
+    header('Location: ../pages/Login.php?error=1'); // On ne précise pas quel champ est incorrect
+    exit(); // On ne précise pas quel champ est incorrect
+}
+
+$conn = getDatabaseConnection();
+$stmt = $conn->prepare("SELECT * FROM PERSONNE WHERE email = :email LIMIT 1");
+$result = [];
+if ($stmt->execute(['email' => $email])) {
+    $result = $stmt->fetch();
+    if (!$result) {
+        header('Location: ../pages/Login.php?error=1'); // On ne précise pas quel champ est incorrect
+        exit(); // On ne précise pas quel champ est incorrect
+    }else{
+
+        if (!password_verify($mot_de_passe, $result['mdp'])) {
+            header('Location: ../pages/Login.php?error='.$result['mdp']); // On ne précise pas quel champ est incorrect
+            exit(); // On ne précise pas quel champ est incorrect
+        }
     }
-} else {
-    echo "Aucun utilisateur trouvé avec cet email.";
 }
 
-$conn->close();
+$fav = $conn->prepare("SELECT * FROM FAVORIS WHERE id_personne = :id_personne");
+$fav->execute(['id_personne' => $result['id']]);
+
+$panier = $conn->prepare("SELECT id_recette FROM PANIER WHERE id_personne = :id_personne");
+$panier->execute(['id_personne' => $result['id']]);
+
+
+session_start();
+$_SESSION['user'] = $result['id'];
+$_SESSION['email'] = $result['email'];
+$_SESSION['nom'] = $result['nom'];
+$_SESSION['prenom'] = $result['prenom'];
+$_SESSION['favoris'] = $fav->fetchAll();
+$panier = $panier->fetchAll();
+foreach ($panier as $key) {
+    $_SESSION['panier'][] = $key['id_recette'];
+}
+
+
+header('Location: ../index.php?user=');
+
+$conn = null;
 ?>

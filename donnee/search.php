@@ -13,8 +13,18 @@ if (empty($query)) {
     echo json_encode([]);
     exit;
 }
+
+$type = $_GET['t'] ?? '';
+if (empty($type)) {
+    $type = 'bois';
+}
+
 // Préparation de la requête SQL avec LIKE pour l'autocomplétion
-$stmt = $pdo->prepare("SELECT titre FROM Recette WHERE lower(titre) LIKE lower(:query) LIMIT 10");
+if ($type == 'bois') {
+    $stmt = $pdo->prepare("SELECT titre FROM Recette WHERE lower(titre) LIKE lower(:query) LIMIT 10");
+} else {
+    $stmt = $pdo->prepare("SELECT nom as titre FROM Ingredient WHERE lower(nom) LIKE lower(:query) LIMIT 10");
+}
 $stmt->execute(['query' => '%' . $query . '%']);
 
 

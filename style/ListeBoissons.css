@@ -7,7 +7,7 @@
 }
 
 .caseBoisson{
-    width: 20vw; /* 20% de la largeur de la fenêtre */
+    width: 22vw; /* 20% de la largeur de la fenêtre */
     max-width: 150px;
     height: calc(20vw * 1.5); /* 30% de la hauteur de la fenêtre */
     max-height: 225px;
@@ -25,6 +25,7 @@
     text-align: center;
     transition: all 0.3s;
     padding: 10px;
+    position: relative;
 }
 
 .caseBoisson:hover{
@@ -45,17 +46,39 @@
     align-content: center;
     justify-content: space-around;
     align-items: center;
+    position: relative;
 }
 
 .caseBoisson div{
     width: 100%;
     height: 100%;
 }
-.caseBoisson img{
+.caseBoisson .imgBoisson{
     width: 80%;
     max-height: 80%;
-    object-fit: cover;
     border-radius: 10%;
+}
+
+.caseBoisson .etoile{
+    position: absolute; 
+    top: -8px;
+    right: -8px;
+    color: var(--primary-color);
+}
+
+.favoris{
+    display: none;
+}
+
+.labelFab > img{
+    width: 25px;
+    height: 25px;
+
+}
+
+.labelFab:hover > img{
+    filter: invert();
+    cursor: pointer;
 }
 
 .caseBoisson p{
@@ -98,4 +121,21 @@
 
 #historique{
     margin-top: 10px;
+}
+
+.btnPanier{
+    padding: 5px 5px 5px 5px;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.panierimg {
+    width: 20px;
+}
+
+.btnPanier:hover > img {
+    filter: invert();
 }

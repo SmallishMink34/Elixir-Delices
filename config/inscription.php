@@ -1,78 +1,49 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+include "../config/mdp.php";
+include "../include/db.php";
 
-$host = 'localhost';
-$username = 'nouvel_utilisateur'; 
-$password = 'mot_de_passe';     
-$dbname = 'utilisateurDB';
-
-$conn = new mysqli($host, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Erreur de connexion : " . $conn->connect_error);
+if (!isset($_POST['nom'])){
+    header('Location: ../pages/Signup.php');
+    exit();
 }
 
-$dbname = 'utilisateurDB';
-
-
-$conn = new mysqli($host, $username, $password);
-
-
-if ($conn->connect_error) {
-    die("Échec de la connexion à la base de données: " . $conn->connect_error);
+$nom = htmlspecialchars(trim($_POST['nom']), ENT_QUOTES, 'UTF-8'); // Sécurisation des données reçues
+if (empty($nom) || strlen($nom) > 50 || !preg_match("/^[a-zA-Z-' ]*$/", $nom)) {
+    header('Location: ../pages/Signup.php?error=1'); // On ne précise pas quel champ est incorrect
+    exit();
 }
 
+$prenom = htmlspecialchars(trim($_POST['prenom']), ENT_QUOTES, 'UTF-8'); // Sécurisation des données reçues
+if (empty($prenom) || strlen($prenom) > 50 || !preg_match("/^[a-zA-Z-' ]*$/", $prenom)) {
+    header('Location: ../pages/Signup.php?error=2');
+    exit();
+}
 
-$sql = "CREATE DATABASE IF NOT EXISTS $dbname";
-if ($conn->query($sql) === TRUE) {
-    echo "Base de données '$dbname' est prête ou déjà existante.<br>";
+$email = htmlspecialchars(trim($_POST['email']), ENT_QUOTES, 'UTF-8'); // Sécurisation des données reçues
+if (empty($email) || strlen($email) > 50 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    header('Location: ../pages/Signup.php?error=3');
+    exit();
+}
+
+$mot_de_passe = htmlspecialchars(trim($_POST['mot_de_passe']), ENT_QUOTES, 'UTF-8'); // Sécurisation des données reçues
+if (empty($mot_de_passe) || strlen($mot_de_passe) < 8 || !preg_match("/[A-Z]/", $mot_de_passe) || !preg_match("/[0-9]/", $mot_de_passe)) {
+    header('Location: ../pages/Signup.php?error=4');
+    exit();
+}
+
+$conn = getDatabaseConnection();
+$stmt = $conn->prepare("INSERT INTO PERSONNE (nom, prenom, email, mdp) VALUES (:nom, :prenom, :email, :mot_de_passe)");
+$stmt->bindParam(':nom', $nom);
+$stmt->bindParam(':prenom', $prenom);
+$stmt->bindParam(':email', $email);
+$stmt->bindParam(':mot_de_passe', password_hash($mot_de_passe, $hash));
+
+if ($stmt->execute()) {
+    header('Location: ../pages/Login.php?success=1');
+    exit();
 } else {
-    echo "Erreur lors de la création de la base de données: " . $conn->error . "<br>";
-}
-
-
-$conn->select_db($dbname);
-
-
-$sql = "CREATE TABLE IF NOT EXISTS utilisateurs (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    mot_de_passe VARCHAR(255) NOT NULL,
-    date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-
-if ($conn->query($sql) === TRUE) {
-    echo "Table 'utilisateurs' prête ou déjà existante.<br>";
-} else {
-    echo "Erreur lors de la création de la table: " . $conn->error . "<br>";
-}
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   
-    $nom = $_POST['nom'];
-    $email = $_POST['email'];
-    $mot_de_passe = $_POST['mot_de_passe'];
-
-    // Hacher mdp
-    $mot_de_passe_hache = password_hash($mot_de_passe, PASSWORD_DEFAULT);
-
-    $sql = "INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)";
-
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $nom, $email, $mot_de_passe_hache);
-    if ($stmt->execute()) {
-        echo "Inscription réussie !<br>";
-    } else {
-        echo "Erreur : " . $stmt->error . "<br>";
-    }
-
-
-    $stmt->close();
+    header('Location: ../pages/Signup.php?error=5');
+    exit();
 }
 
 

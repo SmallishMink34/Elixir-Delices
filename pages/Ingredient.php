@@ -1,10 +1,10 @@
 <script>
 
-function traverseData(data, parsedData = [], path = []) {
+    function traverseData(data, parsedData = [], path = []) {
         data.forEach(item => {
             // Ajout de l'élément courant dans le chemin
             const currentPath = [...path, { ingredient_id: item.ingredient_id, nom: item.ingredient_nom }];
-            
+
             // Si l'élément n'a pas d'enfants, on l'ajoute comme un chemin complet
             if (!item.children || item.children.length === 0) {
                 parsedData.push(currentPath);
@@ -46,7 +46,7 @@ function traverseData(data, parsedData = [], path = []) {
 
                     // Crée un span pour chaque chemin et ajoute un retour à la ligne après chaque chemin
                     const pathSpan = `<span>${pathHTML.slice(0, -3)}</span><br>`;
-                    
+
                     // Ajoute chaque span dans la div englobante
                     listContainer.innerHTML += pathSpan;
                 });
@@ -55,19 +55,19 @@ function traverseData(data, parsedData = [], path = []) {
             .catch(error => {
                 console.error('Erreur dans la requête fetch :', error);
             });
-    }   
+    }
     getBoissonsInformations(<?php echo $_GET['ing']; ?>);
 </script>
 <div id="history">
-    <a href="?page=Home">Accueil</a> > <a href="?page=ListeBoissons">Liste des Ingrédients</a> > 
+    <a href="?page=Home">Accueil</a> > <a href="?page=ListeBoissons">Liste des Ingrédients</a> >
     <span id="listSuper"></span>
 </div>
 <div class="content">
-        <h1 id="titre">aaa</h1>
-        <p id="preparation">Rien</p>
-        <div id="Ingredients">
+    <h1 id="titre">aaa</h1>
+    <p id="preparation">Rien</p>
+    <div id="Ingredients">
 
-        </div>
     </div>
+</div>
 
 </div>

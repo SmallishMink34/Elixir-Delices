@@ -1,7 +1,7 @@
 <?php
 // Configuration de la base de données
-include("mdp.php");
-include("Donnees.inc.php");
+include_once __DIR__ . '/../config/mdp.php';
+include_once __DIR__ . '/../config/Donnees.inc.php';
 
 try {
     // Connexion à la base de données
@@ -46,7 +46,28 @@ try {
             type_relation ENUM('super', 'sous') NOT NULL, # super ou sous
             FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id) ON DELETE CASCADE,
             FOREIGN KEY (categorie_id) REFERENCES Ingredient(id) ON DELETE CASCADE
-        )"
+        )",
+        "CREATE TABLE IF NOT EXISTS PERSONNE (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nom VARCHAR(255) NOT NULL,
+            prenom VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            mdp VARCHAR(255) NOT NULL
+        )","CREATE TABLE IF NOT EXISTS FAVORIS (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_personne INT NOT NULL,
+            id_recette INT NOT NULL,
+            FOREIGN KEY (id_personne) REFERENCES PERSONNE(id) ON DELETE CASCADE,
+            FOREIGN KEY (id_recette) REFERENCES Recette(id) ON DELETE CASCADE
+        )",
+        "CREATE TABLE IF NOT EXISTS PANIER (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_personne INT NOT NULL,
+            id_recette INT NOT NULL,
+            quantite INT NOT NULL DEFAULT 1,
+            FOREIGN KEY (id_personne) REFERENCES PERSONNE(id) ON DELETE CASCADE,
+            FOREIGN KEY (id_recette) REFERENCES Recette(id) ON DELETE CASCADE
+        )",
     ];
 
     // Exécution des requêtes de création

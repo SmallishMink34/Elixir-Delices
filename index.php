@@ -1,11 +1,13 @@
 <?php
+    session_start();
     $page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'home';
     $pageFile = 'pages/' . $page . '.php';
     $styleFile = 'style/' . $page . '.css';
     if (!file_exists($pageFile)) {
         $pageFile = 'pages/404.php';
     }
-?>
+
+    ?>
 
 <!DOCTYPE html>
 <html lang="en">
