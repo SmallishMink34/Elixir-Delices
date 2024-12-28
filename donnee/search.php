@@ -21,9 +21,9 @@ if (empty($type)) {
 
 // Préparation de la requête SQL avec LIKE pour l'autocomplétion
 if ($type == 'bois') {
-    $stmt = $pdo->prepare("SELECT titre FROM Recette WHERE lower(titre) LIKE lower(:query) LIMIT 10");
+    $stmt = $pdo->prepare("SELECT titre, id FROM Recette WHERE lower(titre) LIKE lower(:query) LIMIT 10");
 } else {
-    $stmt = $pdo->prepare("SELECT nom as titre FROM Ingredient WHERE lower(nom) LIKE lower(:query) LIMIT 10");
+    $stmt = $pdo->prepare("SELECT nom, id as titre FROM Ingredient WHERE lower(nom) LIKE lower(:query) LIMIT 10");
 }
 $stmt->execute(['query' => '%' . $query . '%']);
 

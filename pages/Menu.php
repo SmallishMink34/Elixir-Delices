@@ -121,9 +121,9 @@ session_start();
                     const link = document.createElement('a');
                     link.innerHTML = item.titre;
                     if (searchType === 'ing') {
-                        link.href = getUrl().origin + "index.php?page=Ingredients&search=" + item.titre;
+                        link.href = getUrl().origin + "/index.php?page=Ingredient&ing=" + item.id;
                     } else if (searchType === 'bois') {
-                        link.href = getUrl().origin + "index.php?page=Boissons&search=" + item.titre;
+                        link.href = getUrl().origin + "/index.php?page=Boisson&drink=" + item.id;
                     }
                     div.appendChild(link);
                     searchBody.appendChild(div);

@@ -10,11 +10,20 @@ try {
     $pdo = getDatabaseConnection();
 
     $query = [];
-    $results = [];
+    $resultsAlt = [];
 
     $drinkIds = isset($_GET['drink']) ? explode(',', $_GET['drink']) : [];
     $drinkIds = array_filter($drinkIds, fn($id) => is_numeric($id)); // Filtrer les IDs non valides
     $search = $_GET['search'] ?? '';
+    $filter = $_GET['filter'] ?? '';
+    $blackList = [];
+    if ($filter != '') {
+        $blackList = file_get_contents('http://elixirdelice.byethost16.com/donnee/getBlackList.php?ing='.$filter);
+        $blackList = json_decode($blackList, false);
+    }
+
+
+
 
     if (!empty($drinkIds)) {
 
@@ -32,32 +41,24 @@ try {
             $params[":id$index"] = $id;
         }
         $stmt->execute($params);
-    }  elseif (!empty($search)) {
+    }  else {
         $stmt = $pdo->prepare("
             SELECT r.id AS recette_id, r.titre, r.preparation, ri.quantite, ri.unite, i.nom, i.id AS ingredient_id
             FROM Recette r
             JOIN Recette_Ingredient ri ON ri.recette_id = r.id
             JOIN Ingredient i ON i.id = ri.ingredient_id
-            WHERE LOWER(r.titre) LIKE LOWER(:search)
+            WHERE LOWER(r.titre) LIKE LOWER(:search);
         ");
         $stmt->execute(['search' => "%$search%"]);
-    } else {
-        $stmt = $pdo->prepare("
-            SELECT r.id AS recette_id, r.titre, r.preparation, ri.quantite, ri.unite, i.nom, i.id AS ingredient_id
-            FROM Recette r
-            JOIN Recette_Ingredient ri ON ri.recette_id = r.id
-            JOIN Ingredient i ON i.id = ri.ingredient_id
-        ");
-        $stmt->execute();
     }
-
     $query = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if (!empty($query)) {
+
         foreach ($query as $row) {
             $recetteId = $row['recette_id'];
-
-            if (!isset($results[$recetteId])) {
-                $results[$recetteId] = [
+            $list_ingId = [];
+            if (!isset($resultsAlt[$recetteId])) {
+                $resultsAlt[$recetteId] = [
                     'id' => $row['recette_id'],
                     'titre' => $row['titre'] ?? null,
                     'titreFormat' => formatTitre($row['titre']),
@@ -68,17 +69,24 @@ try {
             }
 
             // Ajout des ingrédients
-            $results[$recetteId]['ingredients'][] = [
+            $resultsAlt[$recetteId]['ingredients'][] = [
                 'quantite' => $row['quantite'],
                 'unite' => $row['unite'],
                 'nom' => $row['nom'],
                 'id' => $row['ingredient_id']
             ];
         }
+        if (!empty($filter)) {
+            $resultsAlt = array_filter($resultsAlt, function ($recette) use ($blackList) {
+                $ingredients = array_column($recette['ingredients'], 'id');
+                return !array_intersect($ingredients, $blackList);
+            });
+        }
+
 
         // Gestion des voisins (previous/next)
         if (!isset($_GET['neighborg']) || $_GET['neighborg'] === 'true') {
-            foreach ($results as $recetteId => &$result) {
+            foreach ($resultsAlt as $recetteId => &$result) {
                 $stmtNeighborg = $pdo->prepare("
                     SELECT * FROM (
                         SELECT 
@@ -104,10 +112,10 @@ try {
             }
         }
     } else {
-        $results = ['error' => 'Aucun résultat trouvé'];
+        $resultsAlt = ['error' => 'Aucun résultat trouvé'];
     }
     // Envoi de la réponse JSON
-    echo json_encode($results);
+    echo json_encode($resultsAlt);
     error_log('Fin du traitement');
 } catch (Exception $e) {
     // Gestion des erreurs

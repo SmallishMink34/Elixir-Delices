@@ -1,5 +1,7 @@
 <?php
 session_start();
+include "../donnee/getUserInfos.php";
+
 header('Content-Type: application/json');
 function getCookieData($cookieName) {
     return isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName], false) : null;

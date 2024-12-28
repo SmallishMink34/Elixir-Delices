@@ -21,7 +21,6 @@ entity "Ingrédient" {
 entity "Relation_Ingredient_Categorie" {
   + id: int <<PK>>
   + ingredient_id: int <<FK>>
-  + categorie_id: int <<FK>>
   + type_relation: string <<ENUM>>  // 'super' ou 'sous'
 }
 

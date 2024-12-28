@@ -141,3 +141,17 @@
 .btnPanier:hover > img {
     filter: invert();
 }
+
+.bold {
+    font-weight: bold;
+}
+.lev1, .lev2, .lev3, .lev4, .lev5 {
+    margin: 1px;
+    padding: 1px;
+    border: 1px solid #ccc;
+}
+.child-container {
+    margin-left: 20px;
+    border-left: 2px dashed #aaa;
+    padding-left: 10px;
+}

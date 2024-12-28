@@ -6,13 +6,15 @@ $context = stream_context_create([
         'timeout' => 10, // Timeout de 10 secondes
     ]
 ]);
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $jsonData = file_get_contents('http://elixirdelice.byethost16.com/donnee/BoissonInfo.php?search='.$search, false, $context);
-} else {
-    $jsonData = file_get_contents('http://elixirdelice.byethost16.com/donnee/BoissonInfo.php', false, $context);
-}
+
+$url = 'http://elixirdelice.byethost16.com/donnee/BoissonInfo.php';
+$filter = $_GET['filter'] ?? '';
+$search = $_GET['search'] ?? '';
+$url .= '?filter=' . urlencode($filter) . '&search=' . $search;
+
+$jsonData = file_get_contents($url, false, $context);
 $results = json_decode($jsonData, true);
+
 if (isset($results['error'])) {
     echo $results['error'];
     exit;
